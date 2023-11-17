@@ -1,0 +1,9 @@
+# Key pair
+
+> openssl genrsa -out keypair.pem 2048
+
+#Public key
+> openssl rsa -in keypair.pem -pubout -out publickey.pem
+
+#Private key
+> openssl rsa -in keypair.pem -out privatekey.pem
