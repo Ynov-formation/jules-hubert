@@ -6,13 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ms-security" />
-        <module name="registry" />
-        <module name="ms-catalogue" />
-        <module name="ms-customer" />
-        <module name="config" />
-        <module name="ms-order" />
-        <module name="ms-gateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
