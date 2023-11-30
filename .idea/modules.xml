@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/jules-hubert.iml" filepath="$PROJECT_DIR$/.idea/jules-hubert.iml" />
       <module fileurl="file://$PROJECT_DIR$/ms-catalogue/ms-catalogue.iml" filepath="$PROJECT_DIR$/ms-catalogue/ms-catalogue.iml" />
       <module fileurl="file://$PROJECT_DIR$/ms-gateway/ms-gateway.iml" filepath="$PROJECT_DIR$/ms-gateway/ms-gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ms-order/ms-order.iml" filepath="$PROJECT_DIR$/ms-order/ms-order.iml" />
       <module fileurl="file://$PROJECT_DIR$/ms-security/ms-security.iml" filepath="$PROJECT_DIR$/ms-security/ms-security.iml" />
       <module fileurl="file://$PROJECT_DIR$/ms-transaction/ms-transaction.iml" filepath="$PROJECT_DIR$/ms-transaction/ms-transaction.iml" />
       <module fileurl="file://$PROJECT_DIR$/ms-user/ms-user.iml" filepath="$PROJECT_DIR$/ms-user/ms-user.iml" />
