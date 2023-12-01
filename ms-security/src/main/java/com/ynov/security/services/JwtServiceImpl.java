@@ -1,48 +1,88 @@
 package com.ynov.security.services;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.stream.Collectors;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
-@Transactional
-public class JwtServiceImpl implements JwtService{
+public class JwtServiceImpl implements JwtService {
+    @org.springframework.beans.factory.annotation.Value("${application.security.jwt.secret-key}")
+    private String secretKey;
+    @Value("${application.security.jwt.expiration}")
+    private long jwtExpiration;
+    public String extractUsername(String token) {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtEncoder jwtEncoder;
-
-
-    public JwtServiceImpl(AuthenticationManager authenticationManager, JwtEncoder jwtEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.jwtEncoder = jwtEncoder;
+        return extractClaim(token, Claims::getSubject);
     }
-    @Override
-    public String generateToken(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username,password)
-        );
-        Instant instant = Instant.now();
-        String scope = authentication.getAuthorities()
-                .stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
-        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                .subject(username)
-                .issuedAt(instant)
-                .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
-                .issuer("ms-security")
-                .claim("scope",scope)
-                .build();
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
+    /***** generate token without claims ******/
+    public String generateToken(UserDetails userDetails){
+
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
+    /***** generate token from claims ******/
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails){
+        return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    //refactoring the method to generate an access-token and a refresh token
+    public String buildToken( Map<String, Object> extraClaims,
+                               UserDetails userDetails, long expiration){
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .claim("roles", userDetails.getAuthorities())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    //to verify that's this token it's for the user passed on parameter
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    // to be sure that's the date of expiration it's after the current date
+    public boolean isTokenExpired(String token) {
+
+        return extractExpiration(token).before(new Date());
+    }
+
+    public Date extractExpiration(String token) {
+
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts
+                .parser()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

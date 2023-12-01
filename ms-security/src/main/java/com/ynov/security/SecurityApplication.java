@@ -3,7 +3,7 @@ package com.ynov.security;
 import com.ynov.security.config.RsaKeysConfig;
 import com.ynov.security.dao.UserRepository;
 import com.ynov.security.entities.Role;
-import com.ynov.security.entities.User;
+import com.ynov.security.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 @EnableConfigurationProperties(RsaKeysConfig.class)
-public class SecurityApplication implements CommandLineRunner {
+public class SecurityApplication implements CommandLineRunner  {
 	@Autowired
 	private UserRepository userRepository;
 
@@ -32,7 +32,7 @@ public class SecurityApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		if(userRepository.findByEmail("admin@ynov.com").isEmpty()){
-			User user = User.builder()
+			UserEntity user = UserEntity.builder()
 					.email("admin@ynov.com")
 					.password(passwordEncoder().encode("1234"))
 					.firstName("admin")
@@ -43,7 +43,7 @@ public class SecurityApplication implements CommandLineRunner {
 		}
 
 		if(userRepository.findByEmail("user@ynov.com").isEmpty()){
-			User user = User.builder()
+			UserEntity user = UserEntity.builder()
 					.email("user@ynov.com")
 					.password(passwordEncoder().encode("1234"))
 					.firstName("user")

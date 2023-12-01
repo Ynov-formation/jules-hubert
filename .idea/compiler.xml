@@ -8,11 +8,20 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ms-security" />
         <module name="registry" />
-        <module name="ms-catalogue" />
-        <module name="ms-customer" />
         <module name="config" />
-        <module name="ms-order" />
         <module name="ms-gateway" />
+      </profile>
+      <profile name="Annotation profile for ms-transaction" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+        </processorPath>
+        <module name="ms-transaction" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,6 +31,7 @@
       <module name="ms-gateway" target="17" />
       <module name="ms-order" target="17" />
       <module name="ms-security" target="17" />
+      <module name="ms-transaction" target="17" />
       <module name="registry" target="17" />
     </bytecodeTargetLevel>
   </component>
@@ -33,6 +43,7 @@
       <module name="ms-gateway" options="-parameters" />
       <module name="ms-order" options="-parameters" />
       <module name="ms-security" options="-parameters" />
+      <module name="ms-transaction" options="-parameters" />
       <module name="registry" options="-parameters" />
     </option>
   </component>
