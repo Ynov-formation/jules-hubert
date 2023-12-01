@@ -13,8 +13,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "account")
 @Entity
+@Table(name = "account")
 public class AccountEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,7 +27,7 @@ public class AccountEntity implements Serializable {
     @JsonFormat(pattern="dd-MM-yyyy HHmm")
     private LocalDate timeCreation = LocalDate.now();
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="customer_id", nullable=false)
     private CustomerEntity customer;
 }

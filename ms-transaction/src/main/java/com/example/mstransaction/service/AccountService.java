@@ -4,17 +4,17 @@ package com.example.mstransaction.service;
 import com.example.mstransaction.core.TransactionType;
 import com.example.mstransaction.dao.AccountRepository;
 import com.example.mstransaction.dto.account.AccountRequest;
-import com.example.mstransaction.dto.account.AccountResponse;
+import com.example.mstransaction.dto.customer.CustomerDto;
 import com.example.mstransaction.dto.transaction.TransactionRequest;
 import com.example.mstransaction.entities.AccountEntity;
 import com.example.mstransaction.mapper.AccountMapper;
+import com.example.mstransaction.mapper.CustomerMapper;
 import jakarta.ws.rs.InternalServerErrorException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,7 +24,8 @@ import java.util.UUID;
 public class AccountService {
     private final AccountRepository repository;
     private final CustomerService customerService;
-    private static final AccountMapper mapper = AccountMapper.instance;
+    private static final AccountMapper accountMapper = AccountMapper.instance;
+    private static final CustomerMapper customerMapper = CustomerMapper.instance;
 
     public double getAccountDetails(UUID accountID) {
         return repository.findByAccountID(accountID).getBalance();
@@ -34,18 +35,22 @@ public class AccountService {
         return repository.existsById(accountID);
     }
 
-    public UUID saveAccount(AccountRequest request) {
+    public UUID saveAccount(AccountRequest request) throws Exception {
         try{
             if(!customerService.doesCustomerExist(request.getCustomerId())){
                 throw new NotFoundException("Not found");
             }
-            return Optional.of(request)
-                    .map(mapper::fromAccountRequest)
-                    .map(repository::save)
-                    .map(AccountEntity::getAccountID)
-                    .orElseThrow();
+
+            CustomerDto customer = customerService.getCustomerById(request.getCustomerId());
+
+            AccountEntity account = accountMapper.fromAccountRequest(request);
+            account.setCustomer(customerMapper.toCustomer(customer));
+
+            repository.save(account);
+
+            return account.getAccountID();
         } catch (Exception e){
-            throw new InternalServerErrorException();
+            throw e;
         }
     }
 
@@ -53,12 +58,12 @@ public class AccountService {
         repository.delete(repository.findByAccountID(accountID));
     }
 
-    public void onTransaction(TransactionRequest request) {
+    public void onTransaction(TransactionRequest request) throws Exception {
         try{
             if (!doesAccountExist(request.getAccountID())){
                 throw new NotFoundException("Not found");
             }
-            AccountRequest model = mapper.toAccountRequest(repository.findByAccountID(request.getAccountID()));
+            AccountRequest model = accountMapper.toAccountRequest(repository.findByAccountID(request.getAccountID()));
             if (request.getType() == TransactionType.DEBIT) {
                 model.setBalance(debit(model.getBalance(), request.getAmount()));
             } else {
@@ -66,7 +71,7 @@ public class AccountService {
             }
             saveAccount(model);
         }catch (Exception e) {
-            throw new InternalServerErrorException();
+            throw e;
         }
     }
 

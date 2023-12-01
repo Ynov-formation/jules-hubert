@@ -26,7 +26,7 @@ public class AccountController {
 
     @PostMapping
     @RequestMapping(value ="/create-account")
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequest request){
+    public ResponseEntity<?> createAccount(@RequestBody AccountRequest request) throws Exception {
         UUID result = service.saveAccount(request);
         if(result == null)return ResponseEntity.internalServerError().build();
         return ResponseEntity.ok("Account ID :"+result);

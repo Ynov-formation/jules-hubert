@@ -3,6 +3,7 @@ package com.example.mstransaction.service;
 import com.example.mstransaction.dao.CustomerRepository;
 import com.example.mstransaction.dto.account.AccountResponse;
 import com.example.mstransaction.dto.customer.CustomerDto;
+import com.example.mstransaction.entities.CustomerEntity;
 import com.example.mstransaction.mapper.CustomerMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class CustomerService {
         return Optional.of(customerDto)
                 .map(customerMapper::toCustomer)
                 .map(customerRepository::save)
-                .map(savedCustomer -> savedCustomer.getId())
+                .map(CustomerEntity::getId)
                 .orElseThrow();
     }
 

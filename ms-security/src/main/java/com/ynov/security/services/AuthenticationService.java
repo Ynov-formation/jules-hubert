@@ -4,6 +4,9 @@ import com.ynov.security.dao.TokenRepository;
 import com.ynov.security.dao.UserRepository;
 import com.ynov.security.dto.TokenDto;
 import com.ynov.security.dto.UserLightDto;
+import com.ynov.security.entities.TokenEntity;
+import com.ynov.security.entities.TokenType;
+import com.ynov.security.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +35,7 @@ public class AuthenticationService {
             );
 
             var jwtToken = jwtService.generateToken(user);
+            saveUserToken(user, jwtToken);
             return TokenDto
                     .builder()
                     .token(jwtToken)
@@ -39,6 +43,18 @@ public class AuthenticationService {
                     .build();
         }
         return null;
+    }
+
+    // save user's token on token table and set expired to fae and revoked to false
+    private void saveUserToken(UserEntity user, String jwtToken) {
+        var token = TokenEntity.builder()
+                .user(user)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
     }
 
     public boolean isTokenvalid(String token){

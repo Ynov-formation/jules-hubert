@@ -42,7 +42,8 @@ public class AuthenticationController {
         if (!isValid){
             return new ResponseEntity<>("invalid token", HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(token);
+
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping("/test")

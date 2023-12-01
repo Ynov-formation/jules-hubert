@@ -28,5 +28,9 @@ public class TokenEntity {
     public boolean revoked;
 
     public boolean expired;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user")
+    public UserEntity user;
 }
 
