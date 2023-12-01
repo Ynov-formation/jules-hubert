@@ -1,7 +1,7 @@
 package com.example.mstransaction.controller;
 
-import com.example.mstransaction.dto.TransactionResponse;
-import com.example.mstransaction.dto.TransactionRequest;
+import com.example.mstransaction.dto.transaction.TransactionResponse;
+import com.example.mstransaction.dto.transaction.TransactionRequest;
 import com.example.mstransaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin("*")
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping
 public class TransactionController {
     @Autowired
     private TransactionService service;
@@ -33,7 +33,7 @@ public class TransactionController {
 
     @PostMapping
     @RequestMapping(value ="/create-transaction")
-    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest request){
+    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest request) throws Exception {
         UUID result = service.createTransaction(request);
         if(result == null)return ResponseEntity.internalServerError().build();
         return ResponseEntity.ok("Transaction ID :"+result);
@@ -41,10 +41,9 @@ public class TransactionController {
 
     @PostMapping
     @RequestMapping(value ="/create-transaction-from-to")
-    public ResponseEntity<?> createTransactionToAnotherAccount(@RequestBody TransactionRequest requestFrom, @RequestBody TransactionRequest requestTo) {
+    public ResponseEntity<?> createTransactionToAnotherAccount(@RequestBody TransactionRequest requestFrom, @RequestBody TransactionRequest requestTo) throws Exception {
         UUID result = service.createTransactionFromAccountToAccount(requestFrom, requestTo);
         if(result == null)return ResponseEntity.internalServerError().build();
-//        return ResponseEntity.ok("Transaction ID :"+result);
         return new ResponseEntity<>("Transaction ID :"+result, HttpStatus.CREATED);
     }
 }

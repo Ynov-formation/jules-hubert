@@ -1,0 +1,9 @@
+²application:
+  security:
+    jwt:
+      secret-key: 0a6ee02924665bc6411ae17012d7ef93061bf7ce9aba5c242ec20c53778c6b29
+      expiration: 14400000 #4hours
+
+disable:
+  security:
+    jwt: false
