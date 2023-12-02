@@ -18,7 +18,7 @@ import java.util.UUID;
 public class AccountEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID accountID;
+    private UUID id;
 
     @Column(name = "balance")
     private double balance;

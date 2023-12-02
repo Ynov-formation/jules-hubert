@@ -2,6 +2,7 @@ package com.example.mstransaction.controller;
 
 import com.example.mstransaction.dto.customer.CustomerDto;
 import com.example.mstransaction.service.CustomerService;
+import com.example.mstransaction.service.SecurityServiceClient;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,33 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping(path = "/{customerId}")
-    public ResponseEntity<?> getCustomerById(@PathVariable UUID customerId) {
+    private SecurityServiceClient securityServiceClient;
+
+    @Autowired
+    public void CustomerService(SecurityServiceClient securityServiceClient) {
+        this.securityServiceClient = securityServiceClient;
+    }
+
+    private boolean verifiyIfTokenIsValid(String token){
+
+        ResponseEntity<?> securityServiceResponse = securityServiceClient.getIsTokenValid(token);
+
+        if (securityServiceResponse.getBody() == "true"){
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getCustomerById(@RequestParam UUID customerId, @RequestParam String token) {
+
+        if(token == null){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(!verifiyIfTokenIsValid(token)){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
 
         if (customerId == null){
             return new ResponseEntity<>("customerId can't be null", HttpStatus.BAD_REQUEST);
@@ -33,16 +59,35 @@ public class CustomerController {
 
     @PostMapping
     @ApiOperation(value = "save a new customer and return its ID", response = UUID.class)
-    public ResponseEntity<?> createCustomer(@RequestBody CustomerDto customerDto){
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerDto customerDto, @RequestParam String token){
+
+        if(token == null){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(!verifiyIfTokenIsValid(token)){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
         if (customerDto == null){
             return new ResponseEntity<>("customer can't be null", HttpStatus.BAD_REQUEST);
         }
+
         return new ResponseEntity<>(customerService.saveCustomer(customerDto), HttpStatus.CREATED);
     }
 
     @PutMapping
     @ApiOperation(value = "update a customer and return its ID", response = UUID.class)
-    public ResponseEntity<?> updateCustomer(@RequestBody CustomerDto customerDto){
+    public ResponseEntity<?> updateCustomer(@RequestBody CustomerDto customerDto, @RequestParam String token){
+
+        if(token == null){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(!verifiyIfTokenIsValid(token)){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
         if (customerDto == null){
             return new ResponseEntity<>("customer can't be null", HttpStatus.BAD_REQUEST);
         }
@@ -50,7 +95,16 @@ public class CustomerController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteCustomer(UUID customerId){
+    public ResponseEntity<?> deleteCustomer(UUID customerId, @RequestParam String token){
+
+        if(token == null){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
+        if(!verifiyIfTokenIsValid(token)){
+            return new ResponseEntity<>("token can't be null", HttpStatus.UNAUTHORIZED);
+        }
+
         if (customerId == null){
             return new ResponseEntity<>("customerId can't be null", HttpStatus.BAD_REQUEST);
         }

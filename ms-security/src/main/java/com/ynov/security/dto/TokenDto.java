@@ -13,10 +13,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class TokenDto implements Serializable {
-
-    @JsonProperty("isValid")
-    boolean isValid;
-
     @JsonProperty("token")
     String token;
 }

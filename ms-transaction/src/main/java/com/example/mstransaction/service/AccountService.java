@@ -28,7 +28,7 @@ public class AccountService {
     private static final CustomerMapper customerMapper = CustomerMapper.instance;
 
     public double getAccountDetails(UUID accountID) {
-        return repository.findByAccountID(accountID).getBalance();
+        return repository.findById(accountID).get().getBalance();
     }
 
     private boolean doesAccountExist(UUID accountID) {
@@ -48,14 +48,16 @@ public class AccountService {
 
             repository.save(account);
 
-            return account.getAccountID();
+            return account.getId();
         } catch (Exception e){
             throw e;
         }
     }
 
     public void deleteAccount(UUID accountID) {
-        repository.delete(repository.findByAccountID(accountID));
+
+            repository.deleteById(accountID);
+
     }
 
     public void onTransaction(TransactionRequest request) throws Exception {
@@ -63,7 +65,10 @@ public class AccountService {
             if (!doesAccountExist(request.getAccountID())){
                 throw new NotFoundException("Not found");
             }
-            AccountRequest model = accountMapper.toAccountRequest(repository.findByAccountID(request.getAccountID()));
+            Optional<AccountEntity> accountEntity = repository.findById(request.getAccountID());
+
+            AccountRequest model = accountMapper.toAccountRequest(accountEntity);
+
             if (request.getType() == TransactionType.DEBIT) {
                 model.setBalance(debit(model.getBalance(), request.getAmount()));
             } else {

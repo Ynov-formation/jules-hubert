@@ -39,7 +39,6 @@ public class AuthenticationService {
             return TokenDto
                     .builder()
                     .token(jwtToken)
-                    .isValid(true)
                     .build();
         }
         return null;
