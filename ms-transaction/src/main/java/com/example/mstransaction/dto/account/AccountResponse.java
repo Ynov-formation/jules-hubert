@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class AccountResponse {
-    private UUID accountID;
+    private UUID id;
     private double balance;
     private LocalDate timeCreation;
     private UUID customerId;

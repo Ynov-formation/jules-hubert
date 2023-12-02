@@ -1,14 +1,19 @@
 package com.ynov.security.controller;
 
+import com.ynov.security.dao.TokenRepository;
 import com.ynov.security.dto.TokenDto;
 import com.ynov.security.dto.UserLightDto;
+import com.ynov.security.entities.TokenEntity;
 import com.ynov.security.services.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -35,9 +40,9 @@ public class AuthenticationController {
     }
 
     @GetMapping("/valid-token")
-    public ResponseEntity<?> isTokenValid(@RequestBody TokenDto token) {
+    public ResponseEntity<?> isTokenValid(@RequestParam String token) {
 
-        boolean isValid = authenticationService.isTokenvalid(token.getToken());
+        boolean isValid = authenticationService.isTokenvalid(token);
 
         if (!isValid){
             return new ResponseEntity<>("invalid token", HttpStatus.UNAUTHORIZED);

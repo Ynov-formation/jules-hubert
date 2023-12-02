@@ -8,5 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, UUID> {
-    AccountEntity findByAccountID(UUID accountID);
+    @Override
+    boolean existsById(UUID uuid);
 }
